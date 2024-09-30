@@ -1,0 +1,16 @@
+<h1><%= @representative.name %></h1> 
+<p>Title: <%= @representative.title %> </p>
+<p>Party: <%= @representative.party %> </p>
+<p>Address: 
+  <% if @representative.address.present? %>
+    <%= @representative.address %>, <%= @representative.city %>, <%= @representative.state %>, <%= @representative.zip %>
+  <% else %>
+    No address found
+  <% end %> 
+</p>
+<% if @representative.photo_url.present? %> 
+  <p>PhotoURL: <%= @representative.photo_url %> </p>
+  <%= image_tag @representative.photo_url %> 
+<% else %>
+  <p>No photo found</p>
+<% end %> 

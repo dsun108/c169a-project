@@ -1,0 +1,73 @@
+%h1.text-center Edit News Item
+
+- if @issue.present?
+    .container
+        .row.justify-content-center
+            .col-md-4
+                .form-group
+                    %dl.row
+                        %dt.text-center Representative:
+                        %dd.col-sm-8
+                            = link_to @rep.name, representative_path(@rep)
+                    %dl.row
+                        %%dt.text-center Issue:
+                        %dd.col-sm-8
+                            = @issue
+                    %dl.row
+                        %%dt.text-center Select an article:
+- else
+    .container
+        = form_with url: representative_search_my_news_items_path, method: :get, local: true do |f|
+            .row.justify-content-center
+                .col-md-4
+                    .form-group.row
+                        .col-sm-4
+                            = f.label :rep_id, 'Representative', class: 'col-form-label'
+                        .col-sm-4
+                            = f.select :rep_id, Representative.all.map { |r| [r.name, r.id] },
+                                        { selected: params[:representative_id] }
+
+                    .form-group.row
+                        .col-sm-4
+                            = f.label :issue, 'Issue', class: 'col-form-label'
+                        .col-sm-4
+                            = f.select :issue, NewsItem::ISSUES, { selected: params[:issue] }
+
+                    .actions.text-center
+                        = f.submit 'Search', class: 'btn btn-primary'
+
+- if @news_articles.present?
+    %p
+    = form_with url: representative_new_my_news_item_path, method: :post, local: true do |f|
+        .row.justify-content-center
+            .col-md-4
+                - @news_articles.each do |news_item|
+                    .form-checked
+                        = f.radio_button :selected_news_item, news_item['id'],
+                            id: "news_item_#{news_item['id']}", class: 'form-check-input'
+                        %p
+                            %strong Title:
+                            = news_item['title']
+                        %p
+                            %strong Link:
+                            = link_to news_item['link'], news_item['link']
+                        %p
+                            %strong Description:
+                            = news_item['description']
+                        = hidden_field_tag 'news_item[title]', news_item.title
+                        = hidden_field_tag 'news_item[link]', news_item.link
+                        = hidden_field_tag 'news_item[description]', news_item.description
+
+        .row.justify-content-center
+            .col-md-4
+                .form-group.row
+                    .col-sm-4
+                        = f.label :rating, 'Rating', class: 'col-form-label'
+                    .col-sm-4
+                        = f.select :rating, options_for_select((1..5).to_a),
+                        { prompt: 'Choose a Rating' }, class: 'form-control'
+
+        .actions.text-center
+            = hidden_field_tag 'news_item[issue]', @issue
+            = hidden_field_tag 'news_item[representative_id]', @rep.id
+            = f.submit 'Save', class: 'btn btn-primary'
